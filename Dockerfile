@@ -30,13 +30,16 @@ RUN apt-get install -y \
     libvterm-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala Node.js (sin NVM)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Clona el repositorio de LazyVim y elimina el directorio .git
-RUN git clone https://github.com/LazyVim/starter ~/.config/nvim && \
-    rm -rf ~/.config/nvim/.git
+# Copia la carpeta 'starter' desde el contexto de construcción al contenedor
+COPY starter /starter
+
+# Mueve los archivos al directorio de configuración de Neovim
+RUN mkdir -p ~/.config/nvim && \
+    cp -r /starter/* ~/.config/nvim && \
+    rm -rf /starter
 
 # Descargar y descomprimir Neovim v0.10.2
 RUN curl -LO https://github.com/neovim/neovim/archive/refs/tags/v0.10.2.zip && \
